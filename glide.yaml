@@ -1,0 +1,5 @@
+package: github.com/agungdwiprasetyo/pemilu-checker
+import:
+- package: github.com/agungdwiprasetyo/go-utils
+  subpackages:
+  - debug

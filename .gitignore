@@ -1,0 +1,4 @@
+bin
+pemilu-checker
+vendor/
+glide.lock
