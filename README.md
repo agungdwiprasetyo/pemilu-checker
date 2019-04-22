@@ -67,3 +67,6 @@ Download binary for MacOS:
 ```sh
 $ wget https://storage.googleapis.com/agungdp/bin/pemilu-checker/bin_mac_os && chmod 777 bin_mac_os
 ```
+
+### TODO
+Implement OpenCV for image processing from C1 form photo
