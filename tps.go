@@ -1,30 +1,12 @@
 package main
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
 
 func fetchTps(provinsi, kabupaten, kecamatan, kelurahan string) map[string]string {
-	req, _ := http.NewRequest("GET", fmt.Sprintf("https://pemilu2019.kpu.go.id/static/json/wilayah/%s/%s/%s/%s.json", provinsi, kabupaten, kecamatan, kelurahan), nil)
-
-	client := new(http.Client)
-	client.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
+	body := requestData(fmt.Sprintf("https://pemilu2019.kpu.go.id/static/json/wilayah/%s/%s/%s/%s.json", provinsi, kabupaten, kecamatan, kelurahan))
 
 	var tmp map[string]struct {
 		Nama string `json:"nama"`
@@ -44,25 +26,10 @@ func detailTps(prefix string) (*FormulirC1, error) {
 	defer m.Unlock()
 
 	url := fmt.Sprintf("https://pemilu2019.kpu.go.id/static/json/hhcw/ppwp/%s", prefix)
-	req, _ := http.NewRequest("GET", url, nil)
-
-	client := new(http.Client)
-	client.Transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
+	body := requestData(url)
 
 	var formC1 FormulirC1
-	err = json.Unmarshal(body, &formC1)
+	err := json.Unmarshal(body, &formC1)
 	if err != nil || string(body) == "{}" {
 		return nil, fmt.Errorf("Data belum tersedia")
 	}
