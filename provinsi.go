@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 )
 
-func fetchWilayah() map[string]string {
+func fetchProvinsi() map[string]string {
+	m.Lock()
+	defer m.Unlock()
+
 	body := requestData("https://pemilu2019.kpu.go.id/static/json/wilayah/0.json")
 
 	var tmp map[string]struct {
@@ -12,11 +15,10 @@ func fetchWilayah() map[string]string {
 	}
 	json.Unmarshal(body, &tmp)
 
-	var wilayah = make(map[string]string)
+	var prov = make(map[string]string)
 	for kode, data := range tmp {
-		wilayah[kode] = data.Nama
-		// wilayah = append(wilayah, &model.Wilayah{Kode: kode, Nama: data.Nama})
+		prov[kode] = data.Nama
 	}
 
-	return wilayah
+	return prov
 }

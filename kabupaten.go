@@ -6,6 +6,9 @@ import (
 )
 
 func fetchKabupaten(provinsi string) map[string]string {
+	m.Lock()
+	defer m.Unlock()
+
 	body := requestData(fmt.Sprintf("https://pemilu2019.kpu.go.id/static/json/wilayah/%s.json", provinsi))
 
 	var tmp map[string]struct {

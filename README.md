@@ -1,6 +1,6 @@
 # Pemilu Data Checker
 
-## A HTTP tools for check result of Indonesian Election 2019 Recursively
+## A HTTP tools for checking result of Indonesian Election 2019 Recursively
 
 ### Use
 * Install Golang & dependencies
@@ -20,7 +20,7 @@ $ ./bin --provinsi [kode provinsi] --kabupaten [kode kabupaten] --kecamatan [kod
 ```
 
 ### Flag
-* ```--provinsi``` : kode provinsi, required flag
+* ```--provinsi``` : kode provinsi, if this flag is empty program will run in all TPS in all province in Indonesia
 * ```--kabupaten``` : kode kabupaten, if this flag is empty program will run in all kabupaten in given provinsi recursively
 * ```--kecamatan``` : kode kecamatan, if this flag is empty program will run in all kecamatan in given kabupaten recursively
 * ```--kelurahan``` : kode kelurahan, if this flag is empty program will run in all kelurahan in given kecamatan recursively

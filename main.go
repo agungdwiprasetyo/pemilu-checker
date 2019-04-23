@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
+	"os/signal"
 	"sync"
 
 	"github.com/agungdwiprasetyo/go-utils"
@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	url          = "https://pemilu2019.kpu.go.id/static/json/hhcw/ppwp/22328.json"
 	jokowiAmin   = "21"
 	prabowoSandi = "22"
 )
@@ -54,25 +53,53 @@ func main() {
 	wilayah.TPS.Kode = tps
 
 	multiError = utils.NewMultiError()
-	exec(wilayah)
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt)
 
-	debug.PrintJSON(multiError.ToMap())
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		exec(wilayah)
+		debug.PrintJSON(multiError.ToMap())
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		for {
+			select {
+			case <-sig:
+				debug.PrintJSON(multiError.ToMap())
+				os.Exit(0)
+			}
+		}
+	}()
+
+	wg.Wait()
 }
-
-var (
-	tt string
-)
 
 func exec(wilayah Wilayah) {
 	provinsi, kabupaten, kecamatan, kelurahan, tps := wilayah.Provinsi.Kode, wilayah.Kabupaten.Kode, wilayah.Kecamatan.Kode, wilayah.Kelurahan.Kode, wilayah.TPS.Kode
 
 	if provinsi == "" {
-		log.Fatal("Provinsi tidak boleh kosong")
+		provs := fetchProvinsi()
+		debug.PrintJSON(provs)
+		for key, value := range provs {
+			wilayah.Provinsi.Kode = key
+			wilayah.Provinsi.Nama = value
+			fmt.Printf("Memproses data Provinsi %s\n", value)
+			exec(wilayah)
+		}
 	} else if kabupaten == "" {
 		kabs := fetchKabupaten(provinsi)
 		for key, value := range kabs {
 			wilayah.Kabupaten.Kode = key
 			wilayah.Kabupaten.Nama = value
+			fmt.Printf("Memproses data Kabupaten %s\n", value)
 			exec(wilayah)
 		}
 	} else if kecamatan == "" {
@@ -80,6 +107,7 @@ func exec(wilayah Wilayah) {
 		for key, value := range kecs {
 			wilayah.Kecamatan.Kode = key
 			wilayah.Kecamatan.Nama = value
+			fmt.Printf("Memproses data Kecamatan %s\n", value)
 			exec(wilayah)
 		}
 	} else if kelurahan == "" {
@@ -87,6 +115,7 @@ func exec(wilayah Wilayah) {
 		for key, value := range kels {
 			wilayah.Kelurahan.Kode = key
 			wilayah.Kelurahan.Nama = value
+			fmt.Printf("Memproses data Kelurahan %s\n", value)
 			exec(wilayah)
 		}
 	} else if tps == "" {
@@ -95,12 +124,14 @@ func exec(wilayah Wilayah) {
 		for key, value := range listTps {
 			wilayah.TPS.Kode = key
 			wilayah.TPS.Nama = value
+			fmt.Printf("Memproses data TPS %s\n", value)
 			exec(wilayah)
 		}
 	} else {
 		url := fmt.Sprintf("%s/%s/%s/%s/%s.json", provinsi, kabupaten, kecamatan, kelurahan, tps)
 		data, err := detailTps(url)
 		if err != nil {
+			fmt.Printf("%s: %v\n", wilayah.TPS.Nama, err)
 			key := fmt.Sprintf("%s:%s:%s:%s:%s", provinsi, kabupaten, kecamatan, kelurahan, wilayah.TPS.Nama)
 			multiError.Append(key, err)
 			return

@@ -6,6 +6,9 @@ import (
 )
 
 func fetchKelurahan(provinsi, kabupaten, kecamatan string) map[string]string {
+	m.Lock()
+	defer m.Unlock()
+
 	body := requestData(fmt.Sprintf("https://pemilu2019.kpu.go.id/static/json/wilayah/%s/%s/%s.json", provinsi, kabupaten, kecamatan))
 
 	var tmp map[string]struct {
