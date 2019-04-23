@@ -19,13 +19,23 @@ type Wilayah struct {
 }
 
 type FormulirC1 struct {
-	Chart struct {
-		Jokowi  int `json:"21"`
-		Prabowo int `json:"22"`
-	} `json:"chart"`
-	TotalDPT      int `json:"pemilih_j"`
-	TotalPengguna int `json:"pengguna_j"`
-	SuaraSah      int `json:"suara_sah"`
-	SuaraTidakSah int `json:"suara_tidak_sah"`
-	SuaraTotal    int `json:"suara_total"`
+	PerolehanSuara struct {
+		Jokowi  int `json:"jokowi"`
+		Prabowo int `json:"prabowo"`
+	} `json:"perolehanSuara"`
+	SuaraSah      int `json:"suaraSah"`
+	SuaraTidakSah int `json:"suaraTidakSah"`
+	SuaraTotal    int `json:"suaraTotal"`
+	TotalDPT      int `json:"totalDPT"`
+	TotalPengguna int `json:"totalPengguna"`
+}
+
+type Result struct {
+	Provinsi  string      `json:"provinsi"`
+	Kabupaten string      `json:"kabupaten"`
+	Kecamatan string      `json:"kecamatan"`
+	Kelurahan string      `json:"kelurahan"`
+	TPS       string      `json:"tps"`
+	Data      *FormulirC1 `json:"data"`
+	Error     string      `json:"error"`
 }
