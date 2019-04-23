@@ -27,7 +27,7 @@ $ ./bin --provinsi [kode provinsi] --kabupaten [kode kabupaten] --kecamatan [kod
 * ```--tps``` : kode tps, if this flag is empty program will run in all tps in given kelurahan recursively
 
 ### Example
-Sample data:
+Sample data (last update 2019-04-23 15:39:00):
 * Provinsi: **Aceh** (kode: `1`)
 * Kabupaten: **Aceh Timur** (kode: `671`)
 * Kecamatan: **Julok** (kode: `718`)
@@ -51,10 +51,27 @@ List TPS:
 
 Error:
 ```json
-{
-     "1:671:718:739:TPS 1": "Data belum tersedia",
-     "1:671:718:739:TPS 3": "SALAH. 16+14 bukan 157, bisa ngitungnya gak sih"
-}
+[
+     {
+          "provinsi": "ACEH",
+          "kabupaten": "ACEH TIMUR",
+          "kecamatan": "JULOK",
+          "kelurahan": "BLANG PAUH DUA",
+          "tps": "TPS 3",
+          "data": {
+               "perolehanSuara": {
+                    "jokowi": 16,
+                    "prabowo": 14
+               },
+               "suaraSah": 157,
+               "suaraTidakSah": 2,
+               "suaraTotal": 159,
+               "totalDPT": 227,
+               "totalPengguna": 159
+          },
+          "error": "SALAH. 16+14 bukan 157, bisa ngitungnya gak sih"
+     }
+]
 ```
 
 ### Download
