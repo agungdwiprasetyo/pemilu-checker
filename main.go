@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"time"
 
 	"github.com/agungdwiprasetyo/go-utils"
 	"github.com/agungdwiprasetyo/go-utils/debug"
@@ -19,12 +20,6 @@ const (
 var multiError *utils.MultiError
 var result []*Result
 var m sync.Mutex
-
-// flag.StringVar(&provinsi, "provinsi", "22328", "kode provinsi")
-// 	flag.StringVar(&kabupaten, "kabupaten", "22875", "kode kabupaten")
-// 	flag.StringVar(&kecamatan, "kecamatan", "22962", "kode kecamatan")
-// 	flag.StringVar(&kelurahan, "kelurahan", "22964", "kode kelurahan")
-// 	flag.StringVar(&tps, "tps", "900133331", "kode nomor tps")
 
 func main() {
 	defer func() {
@@ -53,30 +48,13 @@ func main() {
 	wilayah.Kelurahan.Kode = kelurahan
 	wilayah.TPS.Kode = tps
 
-	if provinsi != "" {
-		wilayah.Provinsi.Nama = fetchProvinsi()[provinsi]
-		debug.Println(wilayah.Provinsi.Nama)
-	}
-	if kabupaten != "" {
-		wilayah.Kabupaten.Nama = fetchKabupaten(provinsi)[kabupaten]
-		debug.Println(wilayah.Kabupaten.Nama)
-	}
-	if kecamatan != "" {
-		wilayah.Kecamatan.Nama = fetchKecamatan(provinsi, kabupaten)[kecamatan]
-		debug.Println(wilayah.Kecamatan.Nama)
-	}
-	if kelurahan != "" {
-		wilayah.Kelurahan.Nama = fetchKelurahan(provinsi, kabupaten, kecamatan)[kelurahan]
-		debug.Println(wilayah.Kelurahan.Nama)
-	}
-	if tps != "" {
-		wilayah.TPS.Nama = fetchTps(provinsi, kabupaten, kecamatan, kelurahan)[tps]
-		debug.Println(wilayah.TPS.Nama)
-	}
+	wilayah.Parse()
 
 	multiError = utils.NewMultiError()
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt)
+
+	filename := fmt.Sprintf("%d.json", time.Now().Unix())
 
 	var wg sync.WaitGroup
 
@@ -85,9 +63,7 @@ func main() {
 		defer wg.Done()
 
 		exec(wilayah)
-		// debug.PrintJSON(multiError.ToMap())
-		debug.PrintJSON(result)
-		os.Exit(0)
+		writeToFile(filename)
 	}()
 
 	wg.Add(1)
@@ -97,9 +73,7 @@ func main() {
 		for {
 			select {
 			case <-sig:
-				// debug.PrintJSON(multiError.ToMap())
-				debug.PrintJSON(result)
-				os.Exit(0)
+				writeToFile(filename)
 			}
 		}
 	}()
@@ -149,15 +123,17 @@ func exec(wilayah Wilayah) {
 		for key, value := range listTps {
 			wilayah.TPS.Kode = key
 			wilayah.TPS.Nama = value
-			fmt.Printf("* Memproses data TPS %s\n", value)
+			fmt.Printf("* Memproses data [%s => %s => %s => %s] TPS: %s\n",
+				wilayah.Provinsi.Nama, wilayah.Kabupaten.Nama, wilayah.Kecamatan.Nama, wilayah.Kelurahan.Nama, value)
 			exec(wilayah)
 		}
 	} else {
 		url := fmt.Sprintf("%s/%s/%s/%s/%s.json", provinsi, kabupaten, kecamatan, kelurahan, tps)
 		data, err := detailTps(url)
+		debug.PrintJSON(data)
 		if err != nil {
 			errStr := err.Error()
-			fmt.Printf("\t%s: %v\n", wilayah.TPS.Nama, errStr)
+			fmt.Printf("\t%s: %v\n\n", wilayah.TPS.Nama, errStr)
 			if errStr != NotFound {
 				result = append(result, &Result{
 					Provinsi:  wilayah.Provinsi.Nama,
@@ -171,8 +147,6 @@ func exec(wilayah Wilayah) {
 			}
 			// key := fmt.Sprintf("%s:%s:%s:%s:%s", provinsi, kabupaten, kecamatan, kelurahan, wilayah.TPS.Nama)
 			// multiError.Append(key, err)
-			return
 		}
-		debug.PrintJSON(data)
 	}
 }
