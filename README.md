@@ -33,9 +33,15 @@ Sample data (last update 2019-04-23 15:39:00):
 * Kecamatan: **Julok** (kode: `718`)
 * Kelurahan: **Blang Pauh Dua** (kode: `739`)
 
-Command:
+**Command:**
+
+with code:
 ```sh
 $ ./pemilu-checker --provinsi 1 --kabupaten 671 --kecamatan 718 --kelurahan 739
+```
+OR with name:
+```sh
+$ ./pemilu-checker --provinsi 'aceh' --kabupaten 'aceh timur' --kecamatan 'julok' --kelurahan 'blang pauh dua'
 ```
 
 **Output:**
