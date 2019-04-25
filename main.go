@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/signal"
 	"sync"
@@ -41,6 +42,10 @@ func main() {
 	flag.StringVar(&tps, "tps", "", "kode nomor tps")
 
 	flag.Parse()
+
+	if _, err := ioutil.ReadDir("results"); err != nil {
+		os.Mkdir("results", 0700)
+	}
 
 	var wilayah Wilayah
 	wilayah.Provinsi.Kode = provinsi
