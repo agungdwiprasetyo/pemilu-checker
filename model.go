@@ -61,7 +61,7 @@ func (w *Wilayah) Parse() {
 	}
 	if w.Kecamatan.Kode != "" {
 		m := fetchKecamatan(provinsi, kabupaten)
-		w.Kecamatan.Nama = m[w.Kecamatan.Kode]
+		w.Kecamatan.Nama, ok = m[w.Kecamatan.Kode]
 		if !ok {
 			k, v := searchByValue(kecamatan, m)
 			if k == "" {
@@ -76,7 +76,7 @@ func (w *Wilayah) Parse() {
 	}
 	if kelurahan != "" {
 		m := fetchKelurahan(provinsi, kabupaten, kecamatan)
-		w.Kelurahan.Nama = m[kelurahan]
+		w.Kelurahan.Nama, ok = m[kelurahan]
 		if !ok {
 			k, v := searchByValue(kelurahan, m)
 			if k == "" {
