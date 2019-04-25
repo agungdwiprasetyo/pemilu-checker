@@ -115,3 +115,10 @@ type Result struct {
 	Data      *FormulirC1 `json:"data"`
 	Error     string      `json:"error"`
 }
+
+type Analytic struct {
+	TotalTPS         int `json:"totalTPS"`
+	TotalValid       int `json:"totalValid"`
+	TotalBelumTerisi int `json:"totalBelumTerisi"`
+	TotalAnomali     int `json:"totalAnomali"`
+}

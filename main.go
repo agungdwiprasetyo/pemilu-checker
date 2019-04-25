@@ -18,6 +18,7 @@ const (
 )
 
 var multiError *utils.MultiError
+var analytic Analytic
 var result []*Result
 var m sync.Mutex
 
@@ -128,6 +129,7 @@ func exec(wilayah Wilayah) {
 			exec(wilayah)
 		}
 	} else {
+		analytic.TotalTPS++
 		url := fmt.Sprintf("%s/%s/%s/%s/%s.json", provinsi, kabupaten, kecamatan, kelurahan, tps)
 		data, err := detailTps(url)
 		debug.PrintJSON(data)
@@ -144,9 +146,14 @@ func exec(wilayah Wilayah) {
 					Data:      data,
 					Error:     errStr,
 				})
+				analytic.TotalAnomali++
+			} else {
+				analytic.TotalBelumTerisi++
 			}
 			// key := fmt.Sprintf("%s:%s:%s:%s:%s", provinsi, kabupaten, kecamatan, kelurahan, wilayah.TPS.Nama)
 			// multiError.Append(key, err)
+		} else {
+			analytic.TotalValid++
 		}
 	}
 }

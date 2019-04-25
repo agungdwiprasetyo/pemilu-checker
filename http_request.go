@@ -17,7 +17,7 @@ func requestData(url string) []byte {
 	client.Transport = &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	client.Timeout = 5 * time.Second
+	client.Timeout = 3 * time.Second
 	resp, err := client.Do(req)
 	if err != nil {
 		debug.Println(err)
