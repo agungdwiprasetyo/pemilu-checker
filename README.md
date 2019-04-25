@@ -55,6 +55,16 @@ List TPS:
 }
 ```
 
+Summary:
+```json
+{
+     "totalTPS": 3,
+     "totalValid": 1,
+     "totalBelumTerisi": 1,
+     "totalAnomali": 1
+}
+```
+
 Error:
 ```json
 [
